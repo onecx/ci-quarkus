@@ -53,14 +53,14 @@ jobs:
       run: echo "stdout=$(samo project version)" >> $GITHUB_OUTPUT
     # build JVM version
     - name: Build jvm project, run tests and push docker image
-      if: ${{ !inputs.native }}
+      if: ${{ inputs.native != 'true' }}
       run: mvn -ntp -B -e clean impsort:check formatter:validate verify --file pom.xml
       env:
         QUARKUS_CONTAINER_IMAGE_LABEL_CREATED: ${{ env.NOW }}
         QUARKUS_APPLICATION_VERSION: ${{ steps.project_version.outputs.stdout }}
     # build NATIVE version  
     - name: Build native project, run tests and push docker image
-      if: ${{ inputs.native }}
+      if: ${{ inputs.native == 'true' }}
       run: mvn -ntp -B -e -Pnative clean impsort:check formatter:validate verify --file pom.xml
       env:
         QUARKUS_CONTAINER_IMAGE_LABEL_CREATED: ${{ env.NOW }}

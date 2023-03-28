@@ -43,11 +43,11 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}      
     # build JVM version
     - name: Build jvm project, run tests and push docker image
-      if: ${{ !inputs.native }}
+      if: ${{ inputs.native != 'true' }}
       run: mvn -ntp -B -e clean impsort:check formatter:validate verify --file pom.xml
     # build NATIVE version  
     - name: Build native project, run tests and push docker image
-      if: ${{ inputs.native }}
+      if: ${{ inputs.native == 'true' }}
       run: mvn -ntp -B -e -Pnative clean impsort:check formatter:validate verify --file pom.xml
     # uplaod target for next jobs      
     - uses: actions/upload-artifact@v3
