@@ -49,7 +49,7 @@ jobs:
       run: echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV        
     # get project version release candidate (n.n.n-rc.n) or final version (n.n.n)
     - name: Get project version
-      if: project_version
+      id: project_version
       run: echo "stdout=$(samo project version)" >> $GITHUB_OUTPUT
     # build JVM version
     - name: Build jvm project, run tests and push docker image
