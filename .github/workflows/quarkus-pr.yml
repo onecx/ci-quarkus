@@ -33,7 +33,7 @@ jobs:
     - uses: actions/setup-java@v3
       with:
         distribution: 'zulu'
-        java-version: ${{ inputs.jdk }}'
+        java-version: ${{ inputs.jdk }}
         cache: 'maven'
     # login to github docker registry in the organization
     - uses: docker/login-action@v2
