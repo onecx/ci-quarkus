@@ -71,7 +71,7 @@ jobs:
           SONAR_URL: 'https://sonarcloud.io'      
         run: |
           JSON=$(cat ./target/github-sonar.json)
-          PR=${{ fromJson($JSON) }}          
+          PR=${{ fromJson(JSON) }}          
           REPO=$GITHUB_REPOSITORY
           SONAR_KEY="${GITHUB_REPOSITORY//\//_}"
           OPS="-Dsonar.projectKey=$SONAR_KEY"
