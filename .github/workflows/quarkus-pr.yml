@@ -49,7 +49,10 @@ jobs:
     - name: Build native project, run tests and push docker image
       if: ${{ inputs.native == 'true' }}
       run: mvn -ntp -B -e -Pnative clean impsort:check formatter:validate verify --file pom.xml
-    # uplaod target for next jobs      
+    - name: Create sonar json file
+      run: |
+        echo '{"branch_label":"${{ github.event.pull_request.head.label }}","key": ${{ github.event.pull_request.number }}, "branch":"${{ github.head_ref }}", "base": "${{ github.base_ref }}" }' > 'target/github-sonar.json'      
+    # upload target for next jobs      
     - uses: actions/upload-artifact@v3
       with:
         name: package
