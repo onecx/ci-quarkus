@@ -73,16 +73,16 @@ jobs:
           echo "JSON=$(cat ./target/github-sonar.json)" >> $GITHUB_ENV
           echo $JSON
           echo "PSON=${JSON//'%'/'%25'}" >> $GITHUB_ENV
-          PR=${{ fromJson(env.PSON) }}          
+          echo "PR=${{ fromJson(env.PSON) }}" >> $GITHUB_ENV
           REPO=$GITHUB_REPOSITORY
           SONAR_KEY="${GITHUB_REPOSITORY//\//_}"
           OPS="-Dsonar.projectKey=$SONAR_KEY"
           OPS="$OPS -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml"
           OPS="$OPS -Dsonar.organization=${{ github.repository_owner }}"
           OPS="$OPS -Dsonar.host.url=$SONAR_URL"
-          OPS="$OPS -Dsonar.pullrequest.key=${{ PR.key }}"
-          OPS="$OPS -Dsonar.pullrequest.branch=${{ PR.branch_label }}"
-          OPS="$OPS -Dsonar.pullrequest.base=${{ PR.base }}"
+          OPS="$OPS -Dsonar.pullrequest.key=${{ env.PR.key }}"
+          OPS="$OPS -Dsonar.pullrequest.branch=${{ env.PR.branch_label }}"
+          OPS="$OPS -Dsonar.pullrequest.base=${{ env.PR.base }}"
           echo $OPS
           echo $JSON
           echo $PR
