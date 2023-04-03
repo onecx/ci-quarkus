@@ -51,7 +51,12 @@ jobs:
       run: mvn -ntp -B -e -Pnative clean impsort:check formatter:validate verify --file pom.xml
     - name: Create sonar json file
       run: |
-        echo '{"key": ${{ github.event.number }} }' > 'target/github-sonar.json'      
+          echo ${{ github.event.number }} > github-action-pr.txt
+    # upload github action pr number
+    - uses: actions/upload-artifact@v3
+      with:
+        name: github-action-pr
+        path: github-action-pr.txt
     # upload target for next jobs      
     - uses: actions/upload-artifact@v3
       with:

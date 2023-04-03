@@ -27,43 +27,18 @@ jobs:
       github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.conclusion == 'success'    
     steps:
-      # - name: 'Download artifact'
-      #   uses: actions/github-script@v6
-      #   with:
-      #     script: |
-      #       var artifacts = await github.rest.actions.listWorkflowRunArtifacts({
-      #          owner: context.repo.owner,
-      #          repo: context.repo.repo,
-      #          run_id: ${{github.event.workflow_run.id }},
-      #       });
-      #       var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
-      #         return artifact.name == "${{ inputs.artifact }}"
-      #       })[0];
-      #       var download = await github.rest.actions.downloadArtifact({
-      #          owner: context.repo.owner,
-      #          repo: context.repo.repo,
-      #          artifact_id: matchArtifact.id,
-      #          archive_format: 'zip',
-      #       });
-      #       var fs = require('fs');
-      #       fs.writeFileSync('${{github.workspace}}/${{ inputs.artifact }}.zip', Buffer.from(download.data));
-      # - run: unzip ${{ inputs.artifact }}.zip -d ${{ inputs.artifactPath }}      
       - uses: dawidd6/action-download-artifact@v2
         with:
           run_id: ${{ github.event.workflow_run.id }}
-          name: ${{ inputs.artifact }}      
-          path: ${{ inputs.artifactPath }}
-      - name: Get sonar properties
-        id: pr
-        uses: zoexx/github-action-json-file-properties@1.0.4
+          name: github-action-pr
+      - uses: juliangruber/read-file-action@v1
+        id: pr_number
         with:
-          file_path: "target/github-sonar.json"
+          path: ./github-action-pr.txt
       - uses: octokit/request-action@v2.x
         id: get_pr_data
         with:
-          route: GET /repos/{full_name}/pulls/{number}
-          number: ${{ steps.pr.outputs.key }}
-          full_name: ${{ github.event.repository.full_name }}
+          route: GET /repos/${{ github.event.repository.full_name }}/pulls/${{ steps.pr_number.outputs.content }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}    
       - uses: actions/checkout@v3
@@ -78,6 +53,11 @@ jobs:
           git checkout -B ${{ fromJson(steps.get_pr_data.outputs.data).base.ref }} upstream/${{ fromJson(steps.get_pr_data.outputs.data).base.ref }}
           git checkout ${{ github.event.workflow_run.head_branch }}
           git clean -ffdx && git reset --hard HEAD
+      - uses: dawidd6/action-download-artifact@v2
+        with:
+          run_id: ${{ github.event.workflow_run.id }}
+          name: ${{ inputs.artifact }}      
+          path: ${{ inputs.artifactPath }}
       # set up java and maven cache
       - uses: actions/setup-java@v3
         with:
@@ -100,16 +80,3 @@ jobs:
           OPS="$OPS -Dsonar.pullrequest.branch=${{ fromJson(steps.get_pr_data.outputs.data).head.ref }}"
           OPS="$OPS -Dsonar.pullrequest.base=${{ fromJson(steps.get_pr_data.outputs.data).base.ref }}"
           mvn -ntp -B -e org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar $OPS -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-      # # Check the Quality Gate status.
-      # - name: SonarQube Quality Gate check
-      #   id: sonarqube-quality-gate-check
-      #   uses: sonarsource/sonarqube-quality-gate-action@v1.1.0
-      #   # Force to fail step after specific time.
-      #   timeout-minutes: 5
-      #   with:
-      #       scanMetadataReportFile: target/sonar/report-task.txt        
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      # # The possible outputs of the `quality-gate-status` variable are `PASSED`, `WARN` or `FAILED`.
-      # - name: SonarQube Quality Gate Status value
-      #   run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
