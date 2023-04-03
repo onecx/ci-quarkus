@@ -30,7 +30,9 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: ${{ github.event.workflow_run.head_branch }}
+          ref: ${{ github.ref }}
+      - name: Test
+        run: echo '${{ github.ref }}'
       - name: 'Download artifact'
         uses: actions/github-script@v6
         with:
@@ -84,9 +86,6 @@ jobs:
           OPS="$OPS -Dsonar.pullrequest.base=${{ steps.sonar_pr.outputs.base }}"
           mvn -ntp -B -e org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar $OPS -Dsonar.login=${{ secrets.SONAR_TOKEN }}
       # Check the Quality Gate status.
-      - name: Test
-        run: |
-          cat target/sonar/report-task.txt
       - name: SonarQube Quality Gate check
         id: sonarqube-quality-gate-check
         uses: sonarsource/sonarqube-quality-gate-action@v1.1.0
