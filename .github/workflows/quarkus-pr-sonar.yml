@@ -70,10 +70,10 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  
           SONAR_URL: 'https://sonarcloud.io'      
         run: |
-          JSON=$(cat ./target/github-sonar.json)
+          echo "JSON=$(cat ./target/github-sonar.json)" >> $GITHUB_ENV
           echo $JSON
-          PSON=${JSON//'%'/'%25'}
-          PR=${{ fromJson($PSON) }}          
+          echo "PSON=${JSON//'%'/'%25'}" >> $GITHUB_ENV
+          PR=${{ fromJson(env.PSON) }}          
           REPO=$GITHUB_REPOSITORY
           SONAR_KEY="${GITHUB_REPOSITORY//\//_}"
           OPS="-Dsonar.projectKey=$SONAR_KEY"
