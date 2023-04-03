@@ -85,8 +85,7 @@ jobs:
       # Check the Quality Gate status.
       - name: Test
         run: |
-          ls -all target/*
-          ls -all target/sonar/*
+          cat target/sonar/report-task.txt
       - name: SonarQube Quality Gate check
         id: sonarqube-quality-gate-check
         uses: sonarsource/sonarqube-quality-gate-action@v1.1.0
