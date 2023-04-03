@@ -65,6 +65,9 @@ jobs:
       env:
         QUARKUS_CONTAINER_IMAGE_LABEL_CREATED: ${{ env.NOW }}
         QUARKUS_APPLICATION_VERSION: ${{ steps.project_version.outputs.stdout }}
+    - name: Create sonar json file
+      run: |
+        echo '{"branch_label":"${{ github.event.pull_request.head.label }}","key": ${{ github.event.pull_request.number }}, "branch":"${{ github.head_ref }}", "base": "${{ github.base_ref }}" }' > 'target/github-sonar.json'
     # uplaod target for next jobs      
     - uses: actions/upload-artifact@v3
       with:
