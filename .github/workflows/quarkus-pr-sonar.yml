@@ -70,15 +70,19 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  
           SONAR_URL: 'https://sonarcloud.io'      
         run: |
+          JSON=$(cat ./target/github-sonar.json)
+          PR=${{ fromJson($JSON) }}          
           REPO=$GITHUB_REPOSITORY
           SONAR_KEY="${GITHUB_REPOSITORY//\//_}"
           OPS="-Dsonar.projectKey=$SONAR_KEY"
           OPS="$OPS -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml"
           OPS="$OPS -Dsonar.organization=${{ github.repository_owner }}"
           OPS="$OPS -Dsonar.host.url=$SONAR_URL"
-          OPS="$OPS -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}"
-          OPS="$OPS -Dsonar.pullrequest.branch=${{ github.event.pull_request.head.label }}"
-          OPS="$OPS -Dsonar.pullrequest.base=${{ github.head_ref }}"
+          OPS="$OPS -Dsonar.pullrequest.key=${{ PR.key }}"
+          OPS="$OPS -Dsonar.pullrequest.branch=${{ PR.branch_label }}"
+          OPS="$OPS -Dsonar.pullrequest.base=${{ PR.base }}"
           echo $OPS
+          echo $JSON
+          echo $PR
           mvn -ntp -B -e org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar $OPS -Dsonar.login=${{ secrets.SONAR_TOKEN }}
         
