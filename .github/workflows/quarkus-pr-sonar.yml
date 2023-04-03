@@ -62,25 +62,25 @@ jobs:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+      - name: Get sonar properties
+        id: sonar_pr
+        uses: zoexx/github-action-json-file-properties@1.0.4
+        with:
+          file_path: "target/github-sonar.json"
       - name: Sonar publish analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  
           SONAR_URL: 'https://sonarcloud.io'      
         run: |
-          echo "JSON=$(cat ./target/github-sonar.json)" >> $GITHUB_ENV
-          echo $JSON
-          echo "PSON=${JSON//'%'/'%25'}" >> $GITHUB_ENV
-          echo "PR=${{ fromJson(env.PSON) }}" >> $GITHUB_ENV
-          REPO=$GITHUB_REPOSITORY
           SONAR_KEY="${GITHUB_REPOSITORY//\//_}"
           OPS="-Dsonar.projectKey=$SONAR_KEY"
           OPS="$OPS -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml"
           OPS="$OPS -Dsonar.organization=${{ github.repository_owner }}"
           OPS="$OPS -Dsonar.host.url=$SONAR_URL"
-          OPS="$OPS -Dsonar.pullrequest.key=${{ env.PR.key }}"
-          OPS="$OPS -Dsonar.pullrequest.branch=${{ env.PR.branch_label }}"
-          OPS="$OPS -Dsonar.pullrequest.base=${{ env.PR.base }}"
+          OPS="$OPS -Dsonar.pullrequest.key=${{ steps.sonar_pr.outputs.key }}"
+          OPS="$OPS -Dsonar.pullrequest.branch=${{ steps.sonar_pr.outputs.branch_label }}"
+          OPS="$OPS -Dsonar.pullrequest.base=${{ steps.sonar_pr.outputs.base }}"
           echo $OPS
           echo $JSON
           echo $PR
