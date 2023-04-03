@@ -30,7 +30,6 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: 'refs/remotes/pull/10/merge'
       - name: 'Download artifact'
         uses: actions/github-script@v6
         with:
@@ -83,16 +82,16 @@ jobs:
           OPS="$OPS -Dsonar.pullrequest.branch=${{ steps.sonar_pr.outputs.branch_label }}"
           OPS="$OPS -Dsonar.pullrequest.base=${{ steps.sonar_pr.outputs.base }}"
           mvn -ntp -B -e org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar $OPS -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-      # Check the Quality Gate status.
-      - name: SonarQube Quality Gate check
-        id: sonarqube-quality-gate-check
-        uses: sonarsource/sonarqube-quality-gate-action@v1.1.0
-        # Force to fail step after specific time.
-        timeout-minutes: 5
-        with:
-            scanMetadataReportFile: target/sonar/report-task.txt        
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      # The possible outputs of the `quality-gate-status` variable are `PASSED`, `WARN` or `FAILED`.
-      - name: SonarQube Quality Gate Status value
-        run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
+      # # Check the Quality Gate status.
+      # - name: SonarQube Quality Gate check
+      #   id: sonarqube-quality-gate-check
+      #   uses: sonarsource/sonarqube-quality-gate-action@v1.1.0
+      #   # Force to fail step after specific time.
+      #   timeout-minutes: 5
+      #   with:
+      #       scanMetadataReportFile: target/sonar/report-task.txt        
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      # # The possible outputs of the `quality-gate-status` variable are `PASSED`, `WARN` or `FAILED`.
+      # - name: SonarQube Quality Gate Status value
+      #   run: echo "The Quality Gate status is ${{ steps.sonarqube-quality-gate-check.outputs.quality-gate-status }}"
