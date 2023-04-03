@@ -92,6 +92,8 @@ jobs:
         uses: sonarsource/sonarqube-quality-gate-action@v1.1.0
         # Force to fail step after specific time.
         timeout-minutes: 5
+        with:
+            scanMetadataReportFile: target/sonar/report-task.txt        
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       # The possible outputs of the `quality-gate-status` variable are `PASSED`, `WARN` or `FAILED`.
