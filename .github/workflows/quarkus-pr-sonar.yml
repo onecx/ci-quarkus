@@ -50,9 +50,7 @@ jobs:
             });
             var fs = require('fs');
             fs.writeFileSync('${{github.workspace}}/${{ inputs.artifact }}.zip', Buffer.from(download.data));
-      - run: |
-          mkdir ${{ inputs.artifactPath }}
-          unzip ${{ inputs.artifact }}.zip -d ${{ inputs.artifactPath }}
+      - run: unzip ${{ inputs.artifact }}.zip -d ${{ inputs.artifactPath }}
       # set up java and maven cache
       - uses: actions/setup-java@v3
         with:
