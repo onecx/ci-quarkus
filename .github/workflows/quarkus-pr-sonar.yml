@@ -81,8 +81,5 @@ jobs:
           OPS="$OPS -Dsonar.pullrequest.key=${{ steps.sonar_pr.outputs.key }}"
           OPS="$OPS -Dsonar.pullrequest.branch=${{ steps.sonar_pr.outputs.branch_label }}"
           OPS="$OPS -Dsonar.pullrequest.base=${{ steps.sonar_pr.outputs.base }}"
-          echo $OPS
-          echo $JSON
-          echo $PR
           mvn -ntp -B -e org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar $OPS -Dsonar.login=${{ secrets.SONAR_TOKEN }}
         
