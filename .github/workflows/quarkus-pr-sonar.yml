@@ -29,6 +29,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          repository: ${{ github.event.workflow_run.head_repository.full_name }}
+          ref: ${{ github.event.workflow_run.head_branch }}
           fetch-depth: 0
       - name: 'Download artifact'
         uses: actions/github-script@v6
@@ -78,9 +80,9 @@ jobs:
           OPS="$OPS -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml"
           OPS="$OPS -Dsonar.organization=${{ github.repository_owner }}"
           OPS="$OPS -Dsonar.host.url=$SONAR_URL"
-          OPS="$OPS -Dsonar.pullrequest.key=${{ steps.sonar_pr.outputs.key }}"
-          OPS="$OPS -Dsonar.pullrequest.branch=${{ steps.sonar_pr.outputs.branch_label }}"
-          OPS="$OPS -Dsonar.pullrequest.base=${{ steps.sonar_pr.outputs.base }}"
+          OPS="$OPS -Dsonar.pullrequest.key=${{ github.event.workflow_run.pull_requests[0].number }}"
+          OPS="$OPS -Dsonar.pullrequest.branch=${{ github.event.workflow_run.pull_requests[0].head.ref }}"
+          OPS="$OPS -Dsonar.pullrequest.base=${{ github.event.workflow_run.pull_requests[0].base.ref }}"
           mvn -ntp -B -e org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar $OPS -Dsonar.login=${{ secrets.SONAR_TOKEN }}
       # # Check the Quality Gate status.
       # - name: SonarQube Quality Gate check
