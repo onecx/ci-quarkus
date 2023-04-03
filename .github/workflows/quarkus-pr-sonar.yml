@@ -27,48 +27,63 @@ jobs:
       github.event.workflow_run.event == 'pull_request' &&
       github.event.workflow_run.conclusion == 'success'    
     steps:
+      # - name: 'Download artifact'
+      #   uses: actions/github-script@v6
+      #   with:
+      #     script: |
+      #       var artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+      #          owner: context.repo.owner,
+      #          repo: context.repo.repo,
+      #          run_id: ${{github.event.workflow_run.id }},
+      #       });
+      #       var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
+      #         return artifact.name == "${{ inputs.artifact }}"
+      #       })[0];
+      #       var download = await github.rest.actions.downloadArtifact({
+      #          owner: context.repo.owner,
+      #          repo: context.repo.repo,
+      #          artifact_id: matchArtifact.id,
+      #          archive_format: 'zip',
+      #       });
+      #       var fs = require('fs');
+      #       fs.writeFileSync('${{github.workspace}}/${{ inputs.artifact }}.zip', Buffer.from(download.data));
+      # - run: unzip ${{ inputs.artifact }}.zip -d ${{ inputs.artifactPath }}      
+      - uses: dawidd6/action-download-artifact@v2
+        with:
+          run_id: ${{ github.event.workflow_run.id }}
+          name: ${{ inputs.artifact }}      
+          path: ${{ inputs.artifactPath }}
+      - name: Get sonar properties
+        id: pr
+        uses: zoexx/github-action-json-file-properties@1.0.4
+        with:
+          file_path: "target/github-sonar.json"
+      - uses: octokit/request-action@v2.x
+        id: get_pr_data
+        with:
+          route: GET /repos/{full_name}/pulls/{number}
+          number: ${{ steps.pr.outputs.key }}
+          full_name: ${{ github.event.repository.full_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}    
       - uses: actions/checkout@v3
         with:
           repository: ${{ github.event.workflow_run.head_repository.full_name }}
           ref: ${{ github.event.workflow_run.head_branch }}
           fetch-depth: 0
-      - name: 'Download artifact'
-        uses: actions/github-script@v6
-        with:
-          script: |
-            var artifacts = await github.rest.actions.listWorkflowRunArtifacts({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               run_id: ${{github.event.workflow_run.id }},
-            });
-            var matchArtifact = artifacts.data.artifacts.filter((artifact) => {
-              return artifact.name == "${{ inputs.artifact }}"
-            })[0];
-            var download = await github.rest.actions.downloadArtifact({
-               owner: context.repo.owner,
-               repo: context.repo.repo,
-               artifact_id: matchArtifact.id,
-               archive_format: 'zip',
-            });
-            var fs = require('fs');
-            fs.writeFileSync('${{github.workspace}}/${{ inputs.artifact }}.zip', Buffer.from(download.data));
-      - run: unzip ${{ inputs.artifact }}.zip -d ${{ inputs.artifactPath }}
+      - name: Checkout base branch
+        run: |
+          git remote add upstream ${{ github.event.repository.clone_url }}
+          git fetch upstream
+          git checkout -B ${{ fromJson(steps.get_pr_data.outputs.data).base.ref }} upstream/${{ fromJson(steps.get_pr_data.outputs.data).base.ref }}
+          git checkout ${{ github.event.workflow_run.head_branch }}
+          git clean -ffdx && git reset --hard HEAD
       # set up java and maven cache
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
           java-version: ${{ inputs.jdk }}
           cache: 'maven'
-      - uses: actions/cache@v3
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Get sonar properties
-        id: sonar_pr
-        uses: zoexx/github-action-json-file-properties@1.0.4
-        with:
-          file_path: "target/github-sonar.json"
       - name: Sonar publish analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -77,12 +92,13 @@ jobs:
         run: |
           SONAR_KEY="${GITHUB_REPOSITORY//\//_}"
           OPS="-Dsonar.projectKey=$SONAR_KEY"
+          OPS="$OPS -Dsonar.scm.revision=${{ github.event.workflow_run.head_sha }}"
           OPS="$OPS -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml"
           OPS="$OPS -Dsonar.organization=${{ github.repository_owner }}"
           OPS="$OPS -Dsonar.host.url=$SONAR_URL"
-          OPS="$OPS -Dsonar.pullrequest.key=${{ github.event.workflow_run.pull_requests[0].number }}"
-          OPS="$OPS -Dsonar.pullrequest.branch=${{ github.event.workflow_run.pull_requests[0].head.ref }}"
-          OPS="$OPS -Dsonar.pullrequest.base=${{ github.event.workflow_run.pull_requests[0].base.ref }}"
+          OPS="$OPS -Dsonar.pullrequest.key=${{ fromJson(steps.get_pr_data.outputs.data).number }}"
+          OPS="$OPS -Dsonar.pullrequest.branch=${{ fromJson(steps.get_pr_data.outputs.data).head.ref }}"
+          OPS="$OPS -Dsonar.pullrequest.base=${{ fromJson(steps.get_pr_data.outputs.data).base.ref }}"
           mvn -ntp -B -e org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar $OPS -Dsonar.login=${{ secrets.SONAR_TOKEN }}
       # # Check the Quality Gate status.
       # - name: SonarQube Quality Gate check
