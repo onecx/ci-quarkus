@@ -4,7 +4,7 @@ on:
   workflow_call:
 
 jobs:
-  code-ql:
+  codeql:
     uses: onecx/ci-quarkus/.github/workflows/quarkus-codeql.yml@v1
     secrets: inherit
   quarkus:

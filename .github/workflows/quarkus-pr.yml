@@ -15,7 +15,7 @@ on:
         type: string
 jobs:
   maven:
-    name: build and test
+    name: quarkus build and test
     runs-on: ubuntu-latest
     env:
       QUARKUS_CONTAINER_IMAGE_REGISTRY: 'ghcr.io'
@@ -50,8 +50,7 @@ jobs:
       if: ${{ inputs.native == 'true' }}
       run: mvn -ntp -B -e -Pnative clean impsort:check formatter:validate verify --file pom.xml
     - name: Create sonar json file
-      run: |
-          echo ${{ github.event.number }} > github-action-pr.txt
+      run: echo ${{ github.event.number }} > github-action-pr.txt
     # upload github action pr number
     - uses: actions/upload-artifact@v3
       with:

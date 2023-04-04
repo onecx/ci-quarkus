@@ -1,4 +1,4 @@
-name: build-pr
+name: pr
 
 on:
   workflow_call:

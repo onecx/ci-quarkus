@@ -1,4 +1,4 @@
-name: build-branch
+name: branch
 
 on:
   workflow_call:

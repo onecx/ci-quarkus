@@ -21,7 +21,7 @@ on:
 
 jobs:
   sonar:
-    name: scan
+    name: sonar qa
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

@@ -21,7 +21,7 @@ on:
 
 jobs:
   sonar:
-    name: scan
+    name: sonar qa
     runs-on: ubuntu-latest
     if: >
       github.event.workflow_run.event == 'pull_request' &&
