@@ -27,7 +27,6 @@ jobs:
       QUARKUS_CONTAINER_IMAGE_GROUP: ${{ github.repository_owner }}
       QUARKUS_CONTAINER_IMAGE_BUILD: 'true'
       QUARKUS_CONTAINER_IMAGE_PUSH: ${{ inputs.push }}
-      QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS: '${GITHUB_REF_NAME//\//_}'
       QUARKUS_CONTAINER_IMAGE_LABEL_SOURCE: ${{ github.repositoryUrl }}
       QUARKUS_CONTAINER_IMAGE_LABEL_SHA: ${{ github.sha }}
     steps:
@@ -49,9 +48,12 @@ jobs:
         registry: ${{ env.QUARKUS_CONTAINER_IMAGE_REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-    # set current data as NOW env variable
-    - name: Set current date as NOW
-      run: echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV        
+    # set build env variables
+    - name: Create build env variables
+      run: |
+        TAGS="${GITHUB_REF_NAME//\//_}"
+        echo "TAGS=$TAGS" >> $GITHUB_ENV
+        echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV        
     # get project version release candidate (n.n.n-rc.n) or final version (n.n.n)
     - name: Get project version
       id: project_version
@@ -62,6 +64,7 @@ jobs:
       run: mvn -ntp -B -e clean impsort:check formatter:validate verify --file pom.xml
       env:
         QUARKUS_CONTAINER_IMAGE_LABEL_CREATED: ${{ env.NOW }}
+        QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS: ${{ env.TAGS }}
         QUARKUS_APPLICATION_VERSION: ${{ steps.project_version.outputs.stdout }}
     # build NATIVE version  
     - name: Build native project, run tests and push docker image
@@ -69,6 +72,7 @@ jobs:
       run: mvn -ntp -B -e -Pnative clean impsort:check formatter:validate verify --file pom.xml
       env:
         QUARKUS_CONTAINER_IMAGE_LABEL_CREATED: ${{ env.NOW }}
+        QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS: ${{ env.TAGS }}
         QUARKUS_APPLICATION_VERSION: ${{ steps.project_version.outputs.stdout }}
     # uplaod target for next jobs      
     - uses: actions/upload-artifact@v3
