@@ -12,10 +12,6 @@ jobs:
       contents: read
       security-events: write
 
-    strategy:
-      fail-fast: false
-      matrix:
-        language: [ 'java' ]
     steps:
     - uses: actions/checkout@v3
       # set up java and maven cache
@@ -27,8 +23,8 @@ jobs:
     # Initializes the CodeQL tools for scanning.
     - uses: github/codeql-action/init@v2
       with:
-        languages: ${{ matrix.language }}
+        languages: 'java'
     - uses: github/codeql-action/autobuild@v2
     - uses: github/codeql-action/analyze@v2
       with:
-        category: "/language:${{matrix.language}}"
+        category: "/language:java"
