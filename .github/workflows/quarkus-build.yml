@@ -65,11 +65,11 @@ jobs:
       run: mvn -ntp -B -e -Pnative clean impsort:check formatter:validate verify --file pom.xml
     # store github action pr number to file  
     - name: Create sonar json file
-      if: github.event.workflow_run.event == 'pull_request'
+      if: github.event_name == 'pull_request'
       run: echo ${{ github.event.number }} > github-action-pr.txt      
     # upload github action pr number
     - uses: actions/upload-artifact@v3
-      if: github.event.workflow_run.event == 'pull_request'
+      if: github.event_name == 'pull_request'
       with:
         name: github-action-pr
         path: github-action-pr.txt      
