@@ -3,7 +3,7 @@ name: sonar
 on:
   workflow_call:
     secrets:
-      sonar-token:
+      SONAR_TOKEN:
         required: true  
     inputs:
       jdk:
@@ -70,7 +70,7 @@ jobs:
       - name: Sonar publish analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.sonar-token }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_URL: 'https://sonarcloud.io'      
         run: |
           SONAR_KEY="${GITHUB_REPOSITORY//\//_}"
@@ -82,4 +82,4 @@ jobs:
           OPS="$OPS -Dsonar.pullrequest.key=${{ fromJson(steps.get_pr_data.outputs.data).number }}"
           OPS="$OPS -Dsonar.pullrequest.branch=${{ fromJson(steps.get_pr_data.outputs.data).head.ref }}"
           OPS="$OPS -Dsonar.pullrequest.base=${{ fromJson(steps.get_pr_data.outputs.data).base.ref }}"
-          mvn -ntp -B -e org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar $OPS -Dsonar.login=${{ secrets.sonar-token }}
+          mvn -ntp -B -e org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar $OPS -Dsonar.login=${{ secrets.SONAR_TOKEN }}
