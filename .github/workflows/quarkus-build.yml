@@ -13,6 +13,11 @@ on:
         default: false
         required: false
         type: string
+      push:
+        description: 'Push docker image'
+        default: true
+        required: false
+        type: boolean
 jobs:
   maven:
     name: build and test
@@ -21,7 +26,7 @@ jobs:
       QUARKUS_CONTAINER_IMAGE_REGISTRY: 'ghcr.io'
       QUARKUS_CONTAINER_IMAGE_GROUP: ${{ github.repository_owner }}
       QUARKUS_CONTAINER_IMAGE_BUILD: 'true'
-      QUARKUS_CONTAINER_IMAGE_PUSH: 'true'
+      QUARKUS_CONTAINER_IMAGE_PUSH: ${{ inputs.push }}
       QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS: ${{ github.ref_name }}
       QUARKUS_CONTAINER_IMAGE_LABEL_SOURCE: ${{ github.repositoryUrl }}
       QUARKUS_CONTAINER_IMAGE_LABEL_SHA: ${{ github.sha }}
