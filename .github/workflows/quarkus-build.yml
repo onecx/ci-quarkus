@@ -27,7 +27,7 @@ jobs:
       QUARKUS_CONTAINER_IMAGE_GROUP: ${{ github.repository_owner }}
       QUARKUS_CONTAINER_IMAGE_BUILD: 'true'
       QUARKUS_CONTAINER_IMAGE_PUSH: ${{ inputs.push }}
-      QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS: "${GITHUB_REF_NAME//\//_}"
+      QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS: '${GITHUB_REF_NAME//\//_}'
       QUARKUS_CONTAINER_IMAGE_LABEL_SOURCE: ${{ github.repositoryUrl }}
       QUARKUS_CONTAINER_IMAGE_LABEL_SHA: ${{ github.sha }}
     steps:
