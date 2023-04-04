@@ -51,33 +51,18 @@ jobs:
     # set build env variables
     - name: Create build env variables
       run: |
-        echo $GITHUB_REF_NAME
-        echo ${GITHUB_REF_NAME}
-        TAGS="${GITHUB_REF_NAME//\//_}"
-        echo "TAGS=$TAGS" >> $GITHUB_ENV
-        echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
-        echo ${TAGS}
-        echo ${{ env.TAGS }}
-    # get project version release candidate (n.n.n-rc.n) or final version (n.n.n)
-    - name: Get project version
-      id: project_version
-      run: echo "stdout=$(samo project version)" >> $GITHUB_OUTPUT
+        BRANCH_TAG="${GITHUB_REF_NAME//\//_}"
+        echo "QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS=$BRANCH_TAG" >> $GITHUB_ENV
+        echo "QUARKUS_CONTAINER_IMAGE_LABEL_CREATED=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+        echo "QUARKUS_APPLICATION_VERSION=$(samo project version)" >> $GITHUB_ENV
     # build JVM version
     - name: Build jvm project, run tests and push docker image
       if: ${{ inputs.native != 'true' }}
       run: mvn -ntp -B -e clean impsort:check formatter:validate verify --file pom.xml
-      env:
-        QUARKUS_CONTAINER_IMAGE_LABEL_CREATED: ${{ env.NOW }}
-        QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS: ${{ env.TAGS }}
-        QUARKUS_APPLICATION_VERSION: ${{ steps.project_version.outputs.stdout }}
     # build NATIVE version  
     - name: Build native project, run tests and push docker image
       if: ${{ inputs.native == 'true' }}
       run: mvn -ntp -B -e -Pnative clean impsort:check formatter:validate verify --file pom.xml
-      env:
-        QUARKUS_CONTAINER_IMAGE_LABEL_CREATED: ${{ env.NOW }}
-        QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS: ${{ env.TAGS }}
-        QUARKUS_APPLICATION_VERSION: ${{ steps.project_version.outputs.stdout }}
     # uplaod target for next jobs      
     - uses: actions/upload-artifact@v3
       with:
