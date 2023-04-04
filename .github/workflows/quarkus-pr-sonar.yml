@@ -2,9 +2,6 @@ name: sonar
 
 on:
   workflow_call:
-    secrets:
-      SONAR_TOKEN:
-        required: true  
     inputs:
       jdk:
         description: 'JDK version'
