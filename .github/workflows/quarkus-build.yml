@@ -18,6 +18,11 @@ on:
         default: false
         required: false
         type: boolean
+      tags:
+        description: 'Additional docker image tags'
+        default: '{{ .Branch }}'
+        required: false
+        type: string         
 jobs:
   maven:
     name: quarkus build and test
@@ -27,11 +32,10 @@ jobs:
       QUARKUS_CONTAINER_IMAGE_GROUP: ${{ github.repository_owner }}
       QUARKUS_CONTAINER_IMAGE_BUILD: 'true'
       QUARKUS_CONTAINER_IMAGE_PUSH: ${{ inputs.push }}
-      QUARKUS_CONTAINER_IMAGE_LABEL_SOURCE: ${{ github.repositoryUrl }}
-      QUARKUS_CONTAINER_IMAGE_LABEL_SHA: ${{ github.sha }}
+      SAMO_DOCKER_TAG_TEMPLATE_LIST: ${{ inputs.tags }}
     steps:
     # install samo tool
-    - uses: lorislab/install-samo-action@v1
+    - uses: lorislab/install-samo-action@v2
     # checkout the project
     - uses: actions/checkout@v3
       with:
@@ -51,10 +55,9 @@ jobs:
     # set build env variables
     - name: Create build env variables
       run: |
-        BRANCH_TAG="${GITHUB_REF_NAME//\//_}"
-        echo "QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS=$BRANCH_TAG" >> $GITHUB_ENV
-        echo "QUARKUS_CONTAINER_IMAGE_LABEL_CREATED=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
+        echo "QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS=$(samo project docker tags)" >> $GITHUB_ENV
         echo "QUARKUS_APPLICATION_VERSION=$(samo project version)" >> $GITHUB_ENV
+        samo project docker labels >> src/main/resources/application.properties
     # build JVM version
     - name: Build jvm project, run tests and push docker image
       if: ${{ inputs.native != 'true' }}
