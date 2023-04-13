@@ -58,6 +58,7 @@ jobs:
         echo "QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS=$(samo project docker tags)" >> $GITHUB_ENV
         echo "QUARKUS_APPLICATION_VERSION=$(samo project version)" >> $GITHUB_ENV
         samo project docker labels >> src/main/resources/application.properties
+        cat src/main/resources/application.properties
     # build JVM version
     - name: Build jvm project, run tests and push docker image
       if: ${{ inputs.native != 'true' }}
