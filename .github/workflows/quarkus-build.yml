@@ -33,6 +33,7 @@ jobs:
       QUARKUS_CONTAINER_IMAGE_BUILD: 'true'
       QUARKUS_CONTAINER_IMAGE_PUSH: ${{ inputs.push }}
       SAMO_DOCKER_TAG_TEMPLATE_LIST: ${{ inputs.tags }}
+      SAMO_CONVENTIONAL_COMMITS: 'true'      
     steps:
     # install samo tool
     - uses: lorislab/install-samo-action@v2
