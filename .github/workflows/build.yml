@@ -2,6 +2,7 @@ name: build
 
 on:
   workflow_call:
+    inputs:
       helmEventTargetRepository:
         description: 'Target repository'
         default: ''
