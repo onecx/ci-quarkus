@@ -2,6 +2,11 @@ name: build
 
 on:
   workflow_call:
+      helmEventTargetRepository:
+        description: 'Target repository'
+        default: ''
+        required: false
+        type: string
 
 jobs:
   codeql:
@@ -22,3 +27,10 @@ jobs:
     secrets: inherit
     with:
       push: true
+  helm-event:
+    if: ${{ inputs.helmEventTargetRepository != '' }}
+    uses: onecx/ci-common/.github/workflows/helm-update-event.yml@v1
+    needs: helm
+    secrets: inherit
+    with:
+      targetRepository: ${{ inputs.helmEventTargetRepository }}
