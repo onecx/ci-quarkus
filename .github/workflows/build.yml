@@ -33,7 +33,7 @@ jobs:
       push: true
   helm-event:
     if: ${{ inputs.helmEventTargetRepository != '' }}
-    uses: onecx/ci-product/.github/workflows/helm-send-event.yml@v11
+    uses: onecx/ci-product/.github/workflows/helm-send-event.yml@v1
     needs: helm
     secrets: inherit
     with:
