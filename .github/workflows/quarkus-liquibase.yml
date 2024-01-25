@@ -11,7 +11,7 @@ on:
 
 jobs:
   liquibase:    
-    name: quarkus check liquibase
+    name: quarkus liquibase check
     runs-on: ubuntu-latest
     env:
       QUARKUS_CONTAINER_IMAGE_REGISTRY: 'ghcr.io'

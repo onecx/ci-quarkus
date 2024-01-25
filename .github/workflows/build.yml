@@ -23,7 +23,7 @@ jobs:
      push: true      
   sonar:
     uses: onecx/ci-quarkus/.github/workflows/quarkus-sonar.yml@v1
-    needs: [quarkus, liquibase]
+    needs: [quarkus]
     secrets: inherit
   helm:
     uses: onecx/ci-common/.github/workflows/helm-build.yml@v1
