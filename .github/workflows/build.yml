@@ -13,18 +13,21 @@ jobs:
   codeql:
     uses: onecx/ci-quarkus/.github/workflows/quarkus-codeql.yml@v1
     secrets: inherit
+  liquibase:
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-liquibase.yml@v1
+    secrets: inherit    
   quarkus:
     uses: onecx/ci-quarkus/.github/workflows/quarkus-build.yml@v1
     secrets: inherit
     with:
-      push: true
+     push: true      
   sonar:
     uses: onecx/ci-quarkus/.github/workflows/quarkus-sonar.yml@v1
-    needs: quarkus
+    needs: [quarkus]
     secrets: inherit
   helm:
     uses: onecx/ci-common/.github/workflows/helm-build.yml@v1
-    needs: quarkus
+    needs: [quarkus, liquibase]
     secrets: inherit
     with:
       push: true
