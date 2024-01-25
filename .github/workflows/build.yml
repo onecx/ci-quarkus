@@ -27,7 +27,7 @@ jobs:
     secrets: inherit
   helm:
     uses: onecx/ci-common/.github/workflows/helm-build.yml@v1
-    needs: quarkus
+    needs: [quarkus, liquibase]
     secrets: inherit
     with:
       push: true
