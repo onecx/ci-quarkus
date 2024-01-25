@@ -17,7 +17,7 @@ jobs:
     uses: onecx/ci-quarkus/.github/workflows/quarkus-liquibase.yml@v11
     secrets: inherit    
   quarkus:
-    uses: onecx/ci-quarkus/.github/workflows/quarkus-build.yml@v1
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-build.yml@v11
     secrets: inherit
     with:
      push: true      
