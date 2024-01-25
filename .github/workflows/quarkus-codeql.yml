@@ -21,10 +21,10 @@ jobs:
         java-version: '17'
         cache: 'maven'
     # Initializes the CodeQL tools for scanning.
-    - uses: github/codeql-action/init@v2
+    - uses: github/codeql-action/init@v3
       with:
         languages: 'java'
-    - uses: github/codeql-action/autobuild@v2
-    - uses: github/codeql-action/analyze@v2
+    - uses: github/codeql-action/autobuild@v3
+    - uses: github/codeql-action/analyze@v3
       with:
         category: "/language:java"
