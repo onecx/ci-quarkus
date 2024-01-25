@@ -15,7 +15,7 @@ jobs:
     secrets: inherit
   liquibase:
     if: ${{ hashFiles('src/main/resources/db/changeLog.xml') != '' }}
-    uses: onecx/ci-quarkus/.github/workflows/quarkus-liquibase.yml@v1
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-liquibase.yml@v11
     secrets: inherit    
   quarkus:
     uses: onecx/ci-quarkus/.github/workflows/quarkus-build.yml@v1
