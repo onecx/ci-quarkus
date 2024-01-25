@@ -10,38 +10,44 @@ on:
         type: string    
 
 jobs:
-  maven:
-    name: quarkus build and test
+  liquibase:    
+    name: quarkus check liquibase
     runs-on: ubuntu-latest
     env:
       QUARKUS_CONTAINER_IMAGE_REGISTRY: 'ghcr.io'
       SAMO_DOCKER_TAG_TEMPLATE_LIST: ${{ inputs.tags }}
       SAMO_CONVENTIONAL_COMMITS: 'true'      
     steps:
-    # install samo tool
-    - uses: lorislab/install-samo-action@v2
     # checkout the project
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
+    # install samo tool
+    - uses: lorislab/install-samo-action@v2        
+      if: ${{ hashFiles('src/main/resources/db/changeLog.xml') != '' }}
     # set up java and maven cache
     - uses: actions/setup-java@v4
+      if: ${{ hashFiles('src/main/resources/db/changeLog.xml') != '' }}
       with:
         distribution: 'zulu'
         java-version: ${{ inputs.jdk }}
         cache: 'maven'
     # login to github docker registry in the organization
     - uses: docker/login-action@v3
+      if: ${{ hashFiles('src/main/resources/db/changeLog.xml') != '' }}
       with:
         registry: ${{ env.QUARKUS_CONTAINER_IMAGE_REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
     # set build env variables
     - name: Create build env variables
+      if: ${{ hashFiles('src/main/resources/db/changeLog.xml') != '' }}
       run: |
         echo "QUARKUS_APPLICATION_VERSION=$(samo project version)" >> $GITHUB_ENV
     # build JVM version
     - name: Create liquibase diff
+      if: ${{ hashFiles('src/main/resources/db/changeLog.xml') != '' }}
       run: mvn -ntp -B -e clean compile -Pdb-diff
     - name: Check liquibase diff
+      if: ${{ hashFiles('src/main/resources/db/changeLog.xml') != '' }}
       run: mvn -ntp -B -e validate -Pdb-check
