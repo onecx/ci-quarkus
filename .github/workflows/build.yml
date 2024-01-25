@@ -11,7 +11,7 @@ on:
 
 jobs:
   codeql:
-    uses: onecx/ci-quarkus/.github/workflows/quarkus-codeql.yml@v1
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-codeql.yml@v11
     secrets: inherit
   liquibase:
     uses: onecx/ci-quarkus/.github/workflows/quarkus-liquibase.yml@v11
@@ -22,18 +22,18 @@ jobs:
     with:
      push: true      
   sonar:
-    uses: onecx/ci-quarkus/.github/workflows/quarkus-sonar.yml@v1
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-sonar.yml@v11
     needs: [quarkus]
     secrets: inherit
   helm:
-    uses: onecx/ci-common/.github/workflows/helm-build.yml@v1
+    uses: onecx/ci-common/.github/workflows/helm-build.yml@v11
     needs: [quarkus, liquibase]
     secrets: inherit
     with:
       push: true
   helm-event:
     if: ${{ inputs.helmEventTargetRepository != '' }}
-    uses: onecx/ci-product/.github/workflows/helm-send-event.yml@v1
+    uses: onecx/ci-product/.github/workflows/helm-send-event.yml@v11
     needs: helm
     secrets: inherit
     with:
