@@ -79,7 +79,7 @@ jobs:
         path: github-action-pr.txt      
     # upload target for next jobs      
     - uses: actions/upload-artifact@v4
-      if: ${{ always() }}
+      if: ${{ !cancelled() }}
       with:
         name: package
         path: target
