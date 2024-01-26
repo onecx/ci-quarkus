@@ -10,7 +10,10 @@ jobs:
   quarkus:
     uses: onecx/ci-quarkus/.github/workflows/quarkus-build.yml@v1
     secrets: inherit
+  liquibase:
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-liquibase.yml@v1
+    secrets: inherit
   helm:
     uses: onecx/ci-common/.github/workflows/helm-build.yml@v1
-    needs: quarkus
+    needs: [quarkus, liquibase]
     secrets: inherit
