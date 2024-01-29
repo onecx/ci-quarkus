@@ -32,7 +32,7 @@ jobs:
     secrets: inherit
   native:
     if: ${{ inputs.native }}
-    users: onecx/ci-quarkus/.github/workflows/quarkus-build-native.yml@v1
+    users: onecx/ci-quarkus/.github/workflows/quarkus-build-native.yml@f1
     secrets: inherit
     needs: [quarkus]
     with:
