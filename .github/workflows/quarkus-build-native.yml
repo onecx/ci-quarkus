@@ -20,7 +20,7 @@ on:
         type: string               
 jobs:
   maven:
-    name: quarkus build and test
+    name: quarkus native build and test
     runs-on: ubuntu-latest
     env:
       QUARKUS_CONTAINER_IMAGE_REGISTRY: 'ghcr.io'
