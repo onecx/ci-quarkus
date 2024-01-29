@@ -63,8 +63,9 @@ jobs:
         echo "QUARKUS_APPLICATION_VERSION=$(samo project version)" >> $GITHUB_ENV
         echo "QUARKUS_CONTAINER_IMAGE_TAG=${QUARKUS_APPLICATION_VERSION}-native" >> $GITHUB_ENV        
         samo project docker labels >> src/main/resources/application.properties
-        echo ${QUARKUS_APPLICATION_VERSION}
-        echo ${QUARKUS_CONTAINER_IMAGE_TAG}
+        echo $QUARKUS_APPLICATION_VERSION
+        echo $QUARKUS_CONTAINER_IMAGE_TAG
+        echo $GITHUB_ENV
       env:
         SAMO_DOCKER_LABEL_TEMPLATE: 'quarkus.container-image.labels."{{ .Key }}"={{ .Value }}'
     # build JVM version
