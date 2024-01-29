@@ -3,6 +3,11 @@ name: build
 on:
   workflow_call:
     inputs:
+      native:
+        description: 'Build native image'
+        default: false
+        required: false
+        type: boolean
       helmEventTargetRepository:
         description: 'Target repository'
         default: ''
@@ -25,6 +30,13 @@ jobs:
     uses: onecx/ci-quarkus/.github/workflows/quarkus-sonar.yml@v1
     needs: [quarkus]
     secrets: inherit
+  native:
+    if: ${{ inputs.native }}
+    users: onecx/ci-quarkus/.github/workflows/quarkus-build-native.yml@v1
+    secrets: inherit
+    needs: [quarkus]
+    with:
+      push: true    
   helm:
     uses: onecx/ci-common/.github/workflows/helm-build.yml@v1
     needs: [quarkus, liquibase]

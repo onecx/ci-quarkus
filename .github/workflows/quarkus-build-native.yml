@@ -1,0 +1,80 @@
+name: quarkus
+
+on:
+  workflow_call:
+    inputs:
+      jdk:
+        description: 'JDK version'
+        default: '21'
+        required: false
+        type: string    
+      push:
+        description: 'Push docker image'
+        default: false
+        required: false
+        type: boolean
+      platform:
+        description: 'Docker platforms'
+        default: 'linux/amd64,linux/arm64'
+        required: false
+        type: string               
+jobs:
+  maven:
+    name: quarkus build and test
+    runs-on: ubuntu-latest
+    env:
+      QUARKUS_CONTAINER_IMAGE_REGISTRY: 'ghcr.io'
+      QUARKUS_CONTAINER_IMAGE_GROUP: ${{ github.repository_owner }}
+      QUARKUS_CONTAINER_IMAGE_BUILD: 'true'
+      QUARKUS_CONTAINER_IMAGE_PUSH: ${{ inputs.push }}
+      QUARKUS_DOCKER_BUILDX_PLATFORM: ${{ inputs.platform }}
+      SAMO_DOCKER_TAG_TEMPLATE_LIST: '{{ .Branch }}-native'
+      SAMO_CONVENTIONAL_COMMITS: 'true'      
+    steps:
+    # install samo tool
+    - uses: lorislab/install-samo-action@v2
+    # checkout the project
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    # set up java and maven cache
+    - uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: ${{ inputs.jdk }}
+        cache: 'maven'
+    - uses: graalvm/setup-graalvm@v1
+      with:
+        java-version: ${{ inputs.jdk }}
+        distribution: 'mandrel' # See 'Options' for all available distributions
+        github-token: ${{ secrets.GITHUB_TOKEN }}          
+    # setup github docker registry in the organization
+    - uses: docker/setup-qemu-action@v3
+    - uses: docker/setup-buildx-action@v3
+    - uses: docker/login-action@v3
+      with:
+        registry: ${{ env.QUARKUS_CONTAINER_IMAGE_REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    # set build env variables
+    - name: Create build env variables
+      run: |
+        echo "QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS=$(samo project docker tags)" >> $GITHUB_ENV
+        echo "QUARKUS_APPLICATION_VERSION=$(samo project version)" >> $GITHUB_ENV
+        echo "QUARKUS_CONTAINER_IMAGE_TAG=${QUARKUS_APPLICATION_VERSION}-native" >> $GITHUB_ENV        
+        samo project docker labels >> src/main/resources/application.properties
+        echo ${QUARKUS_APPLICATION_VERSION}
+        echo ${QUARKUS_CONTAINER_IMAGE_TAG}
+      env:
+        SAMO_DOCKER_LABEL_TEMPLATE: 'quarkus.container-image.labels."{{ .Key }}"={{ .Value }}'
+    # build JVM version
+    - name: Build native project, run tests and push docker image
+      run: mvn -ntp -B -e clean impsort:check formatter:validate verify -Pnative --file pom.xml  
+    # upload target for next jobs      
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: package
+        path: target
+        retention-days: 1
+        if-no-files-found: ignore
