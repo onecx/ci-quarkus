@@ -69,7 +69,7 @@ jobs:
         SAMO_DOCKER_LABEL_TEMPLATE: 'quarkus.container-image.labels."{{ .Key }}"={{ .Value }}'
     # build JVM version
     - name: Build native project, run tests and push docker image
-      run: mvn -ntp -B -e clean impsort:check formatter:validate verify -Pnative --file pom.xml  
+      run: mvn -ntp -B -e -Pnative clean impsort:check formatter:validate verify --file pom.xml  
     # upload target for next jobs      
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
