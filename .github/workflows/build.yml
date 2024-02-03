@@ -34,7 +34,7 @@ jobs:
     if: ${{ inputs.native }}
     uses: onecx/ci-quarkus/.github/workflows/quarkus-build-native.yml@f1
     secrets: inherit
-    needs: [quarkus]
+    needs: [sonar]
     with:
       push: true    
   helm:
