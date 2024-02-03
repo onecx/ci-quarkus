@@ -5,7 +5,7 @@ on:
     inputs:
       jdk:
         description: 'JDK version'
-        default: '17'
+        default: '21'
         required: false
         type: string    
       push:
