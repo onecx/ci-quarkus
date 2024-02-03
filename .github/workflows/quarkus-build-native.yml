@@ -28,7 +28,8 @@ jobs:
       QUARKUS_CONTAINER_IMAGE_BUILD: 'true'
       QUARKUS_CONTAINER_IMAGE_PUSH: ${{ inputs.push }}
       QUARKUS_DOCKER_BUILDX_PLATFORM: ${{ inputs.platform }}
-      SAMO_DOCKER_TAG_TEMPLATE_LIST: '{{ .Branch }}-native'
+      QUARKUS_DOCKER_ADDITIONAL_ARGS: "--provenance=false"      
+      SAMO_DOCKER_TAG_TEMPLATE_LIST: '{{ .Branch }}-native'      
       SAMO_CONVENTIONAL_COMMITS: 'true'      
     steps:
     # install samo tool
