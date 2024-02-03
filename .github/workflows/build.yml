@@ -39,7 +39,7 @@ jobs:
       push: true    
   helm:
     uses: onecx/ci-common/.github/workflows/helm-build.yml@v1
-    needs: [sonar, native, liquibase]
+    needs: [sonar, liquibase]
     secrets: inherit
     with:
       push: true
