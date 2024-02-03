@@ -28,20 +28,19 @@ jobs:
       push: true
   sonar:
     uses: onecx/ci-quarkus/.github/workflows/quarkus-sonar.yml@f1
-    needs: [quarkus]
+    needs: [quarkus, liquibase]
     secrets: inherit
   native:
     if: ${{ inputs.native }}
     uses: onecx/ci-quarkus/.github/workflows/quarkus-build-native.yml@f1
     secrets: inherit
-    needs: [quarkus]
+    needs: [quarkus, liquibase]
     with:
       push: true    
   helm:
     if: |
-      always()
+      !cancelled()
       && needs.sonar.result == 'success'
-      && needs.liquibase.result == 'success'
       && ( !inputs.native || needs.native.result == 'success')
     uses: onecx/ci-common/.github/workflows/helm-build.yml@v1
     needs: [sonar, native, liquibase]
