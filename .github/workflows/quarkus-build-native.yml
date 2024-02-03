@@ -65,12 +65,11 @@ jobs:
         samo project docker labels >> src/main/resources/application.properties
         echo "$QUARKUS_APPLICATION_VERSION"
         echo "$QUARKUS_CONTAINER_IMAGE_TAG"
-        echo "$GITHUB_ENV"
       env:
         SAMO_DOCKER_LABEL_TEMPLATE: 'quarkus.container-image.labels."{{ .Key }}"={{ .Value }}'
     # build JVM version
     - name: Build native project, run tests and push docker image
-      run: mvn -ntp -B -e -Dnative clean impsort:check formatter:validate verify --file pom.xml  
+      run: mvn -ntp -B -e -DskipUTs=true -Dnative clean impsort:check formatter:validate verify --file pom.xml  
     # upload target for next jobs      
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
