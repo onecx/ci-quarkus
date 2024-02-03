@@ -61,7 +61,7 @@ jobs:
       run: |
         echo "QUARKUS_CONTAINER_IMAGE_ADDITIONAL_TAGS=$(samo project docker tags)" >> $GITHUB_ENV
         echo "QUARKUS_APPLICATION_VERSION=$(samo project version)" >> $GITHUB_ENV
-        echo "QUARKUS_CONTAINER_IMAGE_TAG=${QUARKUS_APPLICATION_VERSION}-native" >> $GITHUB_ENV        
+        echo "QUARKUS_CONTAINER_IMAGE_TAG=$(samo project version)-native" >> $GITHUB_ENV        
         samo project docker labels >> src/main/resources/application.properties
         echo "$QUARKUS_APPLICATION_VERSION"
         echo "$QUARKUS_CONTAINER_IMAGE_TAG"
