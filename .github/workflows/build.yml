@@ -34,13 +34,13 @@ jobs:
     if: ${{ inputs.native }}
     uses: onecx/ci-quarkus/.github/workflows/quarkus-build-native.yml@f1
     secrets: inherit
-    needs: [sonar]
+    needs: [quarkus]
     with:
       push: true    
   helm:
     if: ${{ !cancelled() }}
     uses: onecx/ci-common/.github/workflows/helm-build.yml@v1
-    needs: [quarkus, native, liquibase]
+    needs: [sonar, native, liquibase]
     secrets: inherit
     with:
       push: true
