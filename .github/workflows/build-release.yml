@@ -2,14 +2,31 @@ name: release
 
 on:
   workflow_call:
+    inputs:
+      native:
+        description: 'Release native image'
+        default: false
+        required: false
+        type: boolean
 
 jobs:
   docker:
     uses: onecx/ci-common/.github/workflows/docker-release.yml@v1
     secrets: inherit
+  native:
+    if: ${{ inputs.native }}
+    uses: onecx/ci-common/.github/workflows/docker-release.yml@v1
+    secrets: inherit
+    with:
+      releaseImageTag: '{{ .Version }}-native'
+      tags: '{{ .Release }}-native'
   helm:
+    if: |
+      !cancelled()
+      && needs.docker.result == 'success'
+      && ( !inputs.native || needs.native.result == 'success')     
     uses: onecx/ci-common/.github/workflows/helm-release.yml@v1
-    needs: docker
+    needs: [docker, native]
     secrets: inherit
   changelog:
     uses: onecx/ci-common/.github/workflows/generate-changelog.yml@v1
