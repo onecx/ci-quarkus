@@ -14,19 +14,19 @@ jobs:
     uses: onecx/ci-common/.github/workflows/dependency-review.yml@v1
     secrets: inherit
   code-ql:
-    uses: onecx/ci-quarkus/.github/workflows/quarkus-codeql.yml@f1
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-codeql.yml@v1
     secrets: inherit
   quarkus:
-    uses: onecx/ci-quarkus/.github/workflows/quarkus-build.yml@f1
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-build.yml@v1
     secrets: inherit
     with:
       platform: ''    
   liquibase:
-    uses: onecx/ci-quarkus/.github/workflows/quarkus-liquibase.yml@f1
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-liquibase.yml@v1
     secrets: inherit
   native:
     if: ${{ inputs.native }}
-    uses: onecx/ci-quarkus/.github/workflows/quarkus-build-native.yml@f1
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-build-native.yml@v1
     secrets: inherit
     needs: [quarkus, liquibase]
     with:
