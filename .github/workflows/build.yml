@@ -50,11 +50,12 @@ jobs:
   helm-event:
     if: |
       !cancelled()
+      && needs.sonar.result == 'success'
       && needs.helm.result == 'success'
       && ( !inputs.native || needs.native.result == 'success')
-      && ${{ inputs.helmEventTargetRepository != '' }}
+      && inputs.helmEventTargetRepository != ''
     uses: onecx/ci-product/.github/workflows/helm-send-event.yml@v1
-    needs: [helm]
+    needs: [helm, sonar, native]
     secrets: inherit
     with:
       targetRepository: ${{ inputs.helmEventTargetRepository }}
