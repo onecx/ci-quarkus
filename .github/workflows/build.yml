@@ -51,6 +51,7 @@ jobs:
     if: |
       !cancelled()
       && needs.helm.result == 'success'
+      && ( !inputs.native || needs.native.result == 'success')
       && ${{ inputs.helmEventTargetRepository != '' }}
     uses: onecx/ci-product/.github/workflows/helm-send-event.yml@v1
     needs: [helm]
