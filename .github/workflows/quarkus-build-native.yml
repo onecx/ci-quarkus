@@ -79,7 +79,7 @@ jobs:
       if: inputs.platform != ''
       run: |
         echo >> src/main/resources/application.properties
-        samo project docker annotation >> src/main/resources/application.properties
+        samo project docker annotations >> src/main/resources/application.properties
       env:
         SAMO_DOCKER_ANNOTATION_TEMPLATE: 'quarkus.docker.buildx.output=type=image,{{ range $index, $item := .Annotations }}{{if $index}},{{end}}annotation-index.{{ $item.Key }}={{ $item.Value}}{{ end }}'
     # build JVM version
