@@ -15,7 +15,7 @@ on:
         type: boolean
       platform:
         description: 'Docker platforms'
-        default: 'linux/amd64,linux/arm64'
+        default: ''
         required: false
         type: string
       args:
