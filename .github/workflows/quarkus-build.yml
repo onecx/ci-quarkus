@@ -103,5 +103,3 @@ jobs:
       with:
         name: quarkus-version
         path: quarkus-version.txt
-        retention-days: 1
-        if-no-files-found: ignore
