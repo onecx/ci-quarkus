@@ -93,3 +93,14 @@ jobs:
         path: target
         retention-days: 1
         if-no-files-found: ignore
+    # store version to file for scan trivy  
+    - name: Create version file
+      run: echo ${{ env.QUARKUS_CONTAINER_IMAGE_TAG }} > quarkus-version-native.txt   
+    # upload target for next jobs      
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: quarkus-version-native
+        path: quarkus-version-native.txt
+        retention-days: 1
+        if-no-files-found: ignore

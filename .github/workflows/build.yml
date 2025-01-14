@@ -26,10 +26,6 @@ jobs:
     secrets: inherit
     with:
       push: true
-  quarkus-trivy:
-    uses: onecx/ci-common/.github/workflows/docker-trivy-scan.yml@v2test
-    needs: [quarkus]
-    secrets: inherit
   sonar:
     uses: onecx/ci-quarkus/.github/workflows/quarkus-sonar.yml@v1
     needs: [quarkus, liquibase]
@@ -40,13 +36,7 @@ jobs:
     secrets: inherit
     needs: [quarkus, liquibase]
     with:
-      push: true   
-  native-trivy:
-    uses: onecx/ci-common/.github/workflows/docker-trivy-scan.yml@v2test
-    needs: [native]
-    secrets: inherit
-    with:
-      native: true
+      push: true
   helm:
     if: |
       !cancelled()
