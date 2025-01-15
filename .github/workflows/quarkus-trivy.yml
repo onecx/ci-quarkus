@@ -2,6 +2,12 @@ name: quarkus-trivy
 
 on:
     workflow_call:
+      inputs:
+        native:
+          description: 'Build native image'
+          default: false
+          required: false
+          type: boolean
 
 jobs:
   quarkus-trivy:
@@ -11,6 +17,7 @@ jobs:
       artifact: 'quarkus-version'
       artifactPath: 'quarkus-version.txt'
   quarkus-native-trivy:
+    if: ${{ inputs.native }}
     uses: onecx/ci-common/.github/workflows/docker-trivy-scan.yml@v2test
     secrets: inherit
     with:
