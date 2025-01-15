@@ -16,10 +16,4 @@ jobs:
     with:
       artifact: 'quarkus-version'
       artifactPath: 'quarkus-version.txt'
-  quarkus-native-trivy:
-    if: ${{ inputs.native }}
-    uses: onecx/ci-common/.github/workflows/docker-trivy-scan.yml@v2test
-    secrets: inherit
-    with:
-      artifact: 'quarkus-version-native'
-      artifactPath: 'quarkus-version-native.txt'
+      native: ${{ inputs.native }}
