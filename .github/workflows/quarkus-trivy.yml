@@ -11,7 +11,7 @@ on:
 
 jobs:
   quarkus-trivy:
-    uses: onecx/ci-common/.github/workflows/docker-trivy-scan.yml@v2test
+    uses: onecx/ci-common/.github/workflows/docker-trivy-scan.yml@v1
     secrets: inherit
     with:
       artifact: 'quarkus-version'
