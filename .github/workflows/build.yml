@@ -36,7 +36,7 @@ jobs:
     secrets: inherit
     needs: [quarkus, liquibase]
     with:
-      push: true    
+      push: true
   helm:
     if: |
       !cancelled()

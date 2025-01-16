@@ -94,3 +94,21 @@ jobs:
         path: target
         retention-days: 1
         if-no-files-found: ignore
+    # Run docker image trivy scan
+    - name: Run Trivy vulnerability scanner for app docker image
+      if: ${{ !cancelled() }}
+      continue-on-error: true
+      uses: aquasecurity/trivy-action@0.28.0
+      with:
+        image-ref: 'ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ env.QUARKUS_APPLICATION_VERSION }}'
+        severity: 'HIGH,CRITICAL'
+        format: table
+    # store version to file for scan trivy  
+    - name: Create version file
+      run: echo ${{ env.QUARKUS_APPLICATION_VERSION }} > quarkus-version.txt   
+    # upload target for next jobs      
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: quarkus-version
+        path: quarkus-version.txt
