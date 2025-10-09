@@ -3,6 +3,11 @@ name: pr
 on:
   workflow_call:
     inputs:  
+      autoMerge:
+        description: 'Auto merge pr'
+        default: true
+        required: false
+        type: boolean
       native:
         description: 'Build native image'
         default: false
@@ -40,4 +45,9 @@ jobs:
       && ( !inputs.native || needs.native.result == 'success')   
     uses: onecx/ci-common/.github/workflows/helm-build.yml@v1
     needs: [quarkus, native, liquibase]
+    secrets: inherit
+  auto-merge:
+    if: ${{ inputs.autoMerge }}
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-pr-auto-merge.yml@d1
+    needs: [helm]
     secrets: inherit
