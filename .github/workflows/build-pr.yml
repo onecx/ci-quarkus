@@ -47,7 +47,7 @@ jobs:
     needs: [quarkus, native, liquibase]
     secrets: inherit
   auto-merge:
-    if: ${{ inputs.autoMerge }}
+    # if: ${{ inputs.autoMerge }}
     uses: onecx/ci-quarkus/.github/workflows/quarkus-pr-auto-merge.yml@d1
     needs: [helm]
     secrets: inherit
