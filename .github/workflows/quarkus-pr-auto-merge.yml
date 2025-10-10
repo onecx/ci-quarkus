@@ -23,7 +23,7 @@ jobs:
         if: steps.metadata.outputs.package-ecosystem == 'docker' || steps.metadata.outputs.package-ecosystem == 'helm' || (steps.metadata.outputs.package-ecosystem == 'maven' && contains(steps.metadata.outputs.dependency-names, 'onecx-quarkus3-parent'))
         run: |
           gh pr review --approve "$PR_URL"
-          gh pr merge --squash --auto "$PR_URL"
+          gh pr merge --merge --auto "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
