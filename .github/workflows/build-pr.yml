@@ -5,7 +5,7 @@ on:
     inputs:  
       autoMerge:
         description: 'Auto merge pr'
-        default: true
+        default: false
         required: false
         type: boolean
       native:
