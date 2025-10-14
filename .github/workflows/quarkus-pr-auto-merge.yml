@@ -1,0 +1,29 @@
+name: pr auto-merge
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  dependabot:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.event_name == 'pull_request'
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Enable auto-merge for Dependabot PRs
+        if: steps.metadata.outputs.package-ecosystem == 'docker' || steps.metadata.outputs.package-ecosystem == 'helm' || (steps.metadata.outputs.package-ecosystem == 'maven' && contains(steps.metadata.outputs.dependency-names, 'onecx-quarkus3-parent'))
+        run: |
+          gh pr review --approve "$PR_URL"
+          gh pr merge --squash --auto "$PR_URL"
+        env:
+          PR_URL: ${{github.event.pull_request.html_url}}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
