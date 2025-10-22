@@ -55,7 +55,7 @@ jobs:
       && needs.sonar.result == 'success'
       && ( !inputs.native || needs.native.result == 'success' || needs.nativeMulti.result == 'success' )
     uses: onecx/ci-common/.github/workflows/helm-build.yml@v1
-    needs: [sonar, native]
+    needs: [sonar, native, nativeMulti]
     secrets: inherit
     with:
       push: true

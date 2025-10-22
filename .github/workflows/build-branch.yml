@@ -46,5 +46,5 @@ jobs:
       && needs.liquibase.result == 'success'
       && ( !inputs.native || needs.native.result == 'success' || needs.nativeMulti.result == 'success' )
     uses: onecx/ci-common/.github/workflows/helm-build.yml@v1
-    needs: [quarkus, native, liquibase]
+    needs: [quarkus, native, nativeMulti]
     secrets: inherit
