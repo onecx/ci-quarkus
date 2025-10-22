@@ -100,7 +100,7 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
-        name: package-native
+        name: package-native-${{ matrix.arch }}
         path: target
         retention-days: 1
         if-no-files-found: ignore
