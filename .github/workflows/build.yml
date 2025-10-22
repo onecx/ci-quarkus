@@ -8,6 +8,11 @@ on:
         default: false
         required: false
         type: boolean
+      nativeMulti:
+        description: 'Build multiple architectures x84, arm4, ... native image'
+        default: true
+        required: false
+        type: boolean
       helmEventTargetRepository:
         description: 'Target repository'
         default: ''
@@ -31,8 +36,15 @@ jobs:
     needs: [quarkus, liquibase]
     secrets: inherit
   native:
-    if: ${{ inputs.native }}
+    if: ${{ inputs.native && !inputs.nativeMulti }}
     uses: onecx/ci-quarkus/.github/workflows/quarkus-build-native.yml@v1
+    secrets: inherit
+    needs: [quarkus, liquibase]
+    with:
+      push: true
+  nativeMulti:
+    if: ${{ inputs.native && inputs.nativeMulti }}
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-build-native-multi.yml@m1
     secrets: inherit
     needs: [quarkus, liquibase]
     with:
@@ -41,7 +53,7 @@ jobs:
     if: |
       !cancelled()
       && needs.sonar.result == 'success'
-      && ( !inputs.native || needs.native.result == 'success')
+      && ( !inputs.native || needs.native.result == 'success' || needs.nativeMulti.result == 'success' )
     uses: onecx/ci-common/.github/workflows/helm-build.yml@v1
     needs: [sonar, native]
     secrets: inherit

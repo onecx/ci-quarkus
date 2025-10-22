@@ -13,6 +13,11 @@ on:
         default: false
         required: false
         type: boolean
+      nativeMulti:
+        description: 'Build multiple architectures x84, arm4, ... native image'
+        default: true
+        required: false
+        type: boolean
 
 jobs:
   dependency-review:
@@ -35,8 +40,14 @@ jobs:
     secrets: inherit
     needs: [quarkus, liquibase]
     with:
-      platform: ''
       args: '-Ob'  # enable quick build mode
+  nativeMulti:
+    if: ${{ inputs.native && inputs.nativeMulti }}
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-build-native-multi.yml@m1
+    secrets: inherit
+    needs: [quarkus, liquibase]
+    with:
+      args: '-Ob' # enable quick build mode
   helm:
     if: |
       !cancelled()
