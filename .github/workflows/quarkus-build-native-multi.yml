@@ -79,8 +79,9 @@ jobs:
       run: |
         echo "QUARKUS_APPLICATION_VERSION=$(samo project version)" >> $GITHUB_ENV
         echo "QUARKUS_CONTAINER_IMAGE_TAG=$(samo project version)-native-$MATRIX_ARCH" >> $GITHUB_ENV
-        echo "CONTAINER_NAME=${{ env.QUARKUS_CONTAINER_IMAGE_REGISTRY }}/${{ env.QUARKUS_CONTAINER_IMAGE_GROUP }}/${{ github.event.repository.name }}" >> $GITHUB_ENV
+        echo "CONTAINER_NAME=${{ env.QUARKUS_CONTAINER_IMAGE_REGISTRY }}/${{ env.QUARKUS_CONTAINER_IMAGE_GROUP }}/$(samo project name)" >> $GITHUB_ENV
         echo >> src/main/resources/application.properties
+        echo quarkus.docker.build-args.BUILDKIT_MULTI_PLATFORM=true >> src/main/resources/application.properties
         samo project docker labels >> src/main/resources/application.properties
       env:
         SAMO_DOCKER_LABEL_TEMPLATE: 'quarkus.container-image.labels."{{ .Key }}"={{ .Value }}'
@@ -95,15 +96,7 @@ jobs:
     # build JVM version
     - name: Build native project, run tests and push docker image
       run: mvn -ntp -B -e -DskipUTs=true -Dnative clean impsort:check formatter:validate verify --file pom.xml  
-    - name: Docker image digest
-      if: ${{ !cancelled() && inputs.push }}
-      run: echo "DIGEST=$(docker inspect $CONTAINER_NAME:$QUARKUS_CONTAINER_IMAGE_TAG --format='{{ .Id }}')" >> $GITHUB_ENV
-    - name: Push docker image digest
-      if: ${{ !cancelled() && inputs.push }}
-      run: |
-        echo "CONTAINER_IMAGE_DIGEST=${DIGEST#*sha256:}" >> $GITHUB_ENV
-        docker push "${{ env.CONTAINER_NAME }}@${{ env.DIGEST }}"
-    # upload target for next jobs      
+    # upload target for next jobs
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
@@ -111,12 +104,16 @@ jobs:
         path: target
         retention-days: 1
         if-no-files-found: ignore
+    - name: Create digest
+      if: ${{ !cancelled() && inputs.push }}
+      run: |
+         echo "DIGEST=$(docker buildx imagetools inspect $CONTAINER_NAME:$QUARKUS_CONTAINER_IMAGE_TAG --format '{{json .Manifest}}' | jq -r '.digest' | awk -F':' '{print $2}')" >> $GITHUB_ENV
     - name: Export digests
       if: ${{ !cancelled() && inputs.push }}
       run: |
         mkdir -p ${{ runner.temp }}/digests
-        touch "${{ runner.temp }}/digests/${{ env.CONTAINER_IMAGE_DIGEST }}"
-    - name: Upload image info
+        touch "${{ runner.temp }}/digests/${{ env.DIGEST }}"
+    - name: Upload digest info
       uses: actions/upload-artifact@v4
       if: ${{ !cancelled() && inputs.push }}
       with:
@@ -136,13 +133,14 @@ jobs:
         severity: 'HIGH,CRITICAL'
         format: table
   merge:
+    if: ${{ inputs.push }}
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() && inputs.push }}
     needs:
       - maven
     env:
       QUARKUS_CONTAINER_IMAGE_REGISTRY: 'ghcr.io'
       QUARKUS_CONTAINER_IMAGE_GROUP: ${{ github.repository_owner }}
+      SAMO_DOCKER_TAG_TEMPLATE_LIST: '{{ .Branch }}-native'
       SAMO_CONVENTIONAL_COMMITS: 'true'
     steps:
       # install samo tool
@@ -166,10 +164,14 @@ jobs:
       - name: Create version
         run: |
           echo "PROJECT_IMAGE_TAG=$(samo project version)-native" >> $GITHUB_ENV
-          echo "PROJECT_IMAGE_NAME=$(samo project name)" >> $GITHUB_ENV
-          echo "PROJECT_IMAGE=${{ env.QUARKUS_CONTAINER_IMAGE_REGISTRY }}/${{ env.QUARKUS_CONTAINER_IMAGE_GROUP }}/${{ env.PROJECT_IMAGE_NAME }}" >> $GITHUB_ENV
+          echo "PROJECT_IMAGE_BRANCH_TAG=$(samo project docker tags)" >> $GITHUB_ENV
+          echo "PROJECT_IMAGE=${{ env.QUARKUS_CONTAINER_IMAGE_REGISTRY }}/${{ env.QUARKUS_CONTAINER_IMAGE_GROUP }}/$(samo project name)" >> $GITHUB_ENV
+          echo "PROJECT_IMAGE_ANO=$(samo project docker annotations)" >> $GITHUB_ENV
+        env:
+          SAMO_DOCKER_ANNOTATION_TEMPLATE: '{{ range $index, $item := .Annotations }}{{if $index}} {{end}}--annotation "index:{{ $item.Key }}={{ $item.Value}}"{{ end }}'
       - name: Create manifest list and push
         working-directory: ${{ runner.temp }}/digests
         run: |
-          docker buildx imagetools create -t ${{ env.QUARKUS_CONTAINER_IMAGE_REGISTRY }}/${{ env.QUARKUS_CONTAINER_IMAGE_GROUP }}/${{ env.PROJECT_IMAGE_NAME }}:${{ env.PROJECT_IMAGE_TAG }} \
-            $(printf '${{ env.QUARKUS_CONTAINER_IMAGE_REGISTRY }}/${{ env.QUARKUS_CONTAINER_IMAGE_GROUP }}/${{ env.PROJECT_IMAGE_NAME }}@sha256:%s ' *)
+          docker buildx imagetools create -t ${{ env.PROJECT_IMAGE }}:${{ env.PROJECT_IMAGE_TAG }} -t ${{ env.PROJECT_IMAGE }}:${{ env.PROJECT_IMAGE_BRANCH_TAG }} \
+            ${{ env.PROJECT_IMAGE_ANO }} \
+            $(printf '${{ env.PROJECT_IMAGE }}@sha256:%s ' *)
