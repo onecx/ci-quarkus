@@ -15,7 +15,7 @@ on:
         type: boolean
       nativeMulti:
         description: 'Build multiple architectures x84, arm4, ... native image'
-        default: true
+        default: false
         required: false
         type: boolean
 
