@@ -13,6 +13,11 @@ on:
         default: false
         required: false
         type: boolean
+      nativeMulti:
+        description: 'Build multiple architectures x84, arm4, ... native image'
+        default: false
+        required: false
+        type: boolean
 
 jobs:
   dependency-review:
@@ -30,13 +35,19 @@ jobs:
     uses: onecx/ci-quarkus/.github/workflows/quarkus-liquibase.yml@v1
     secrets: inherit
   native:
-    if: ${{ inputs.native }}
+    if: ${{ inputs.native && !inputs.nativeMulti }}
     uses: onecx/ci-quarkus/.github/workflows/quarkus-build-native.yml@v1
     secrets: inherit
     needs: [quarkus, liquibase]
     with:
-      platform: ''
       args: '-Ob'  # enable quick build mode
+  nativeMulti:
+    if: ${{ inputs.native && inputs.nativeMulti }}
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-build-native-multi.yml@v1
+    secrets: inherit
+    needs: [quarkus, liquibase]
+    with:
+      args: '-Ob' # enable quick build mode
   helm:
     if: |
       !cancelled()
@@ -44,7 +55,7 @@ jobs:
       && needs.liquibase.result == 'success'
       && ( !inputs.native || needs.native.result == 'success')
     uses: onecx/ci-common/.github/workflows/helm-build.yml@v1
-    needs: [quarkus, native, liquibase]
+    needs: [quarkus, native, nativeMulti]
     secrets: inherit
   auto-merge:
     if: |
