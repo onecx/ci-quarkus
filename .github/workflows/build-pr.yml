@@ -35,7 +35,7 @@ jobs:
     uses: onecx/ci-quarkus/.github/workflows/quarkus-liquibase.yml@v1
     secrets: inherit
   native:
-    if: ${{ inputs.native }}
+    if: ${{ inputs.native && !inputs.nativeMulti }}
     uses: onecx/ci-quarkus/.github/workflows/quarkus-build-native.yml@v1
     secrets: inherit
     needs: [quarkus, liquibase]
