@@ -44,7 +44,7 @@ jobs:
       push: true
   nativeMulti:
     if: ${{ inputs.native && inputs.nativeMulti }}
-    uses: onecx/ci-quarkus/.github/workflows/quarkus-build-native-multi.yml@m1
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-build-native-multi.yml@v1
     secrets: inherit
     needs: [quarkus, liquibase]
     with:
