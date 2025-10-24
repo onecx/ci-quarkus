@@ -57,9 +57,3 @@ jobs:
     uses: onecx/ci-common/.github/workflows/helm-build.yml@v1
     needs: [quarkus, native, nativeMulti]
     secrets: inherit
-  auto-merge:
-    if: |
-      !cancelled() && needs.helm.result == 'success' && inputs.autoMerge
-    uses: onecx/ci-quarkus/.github/workflows/quarkus-pr-auto-merge.yml@v1
-    needs: [helm]
-    secrets: inherit
