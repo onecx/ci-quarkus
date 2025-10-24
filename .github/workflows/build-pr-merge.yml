@@ -13,5 +13,4 @@ jobs:
   auto-merge:
     if: ${{ inputs.autoMerge }}
     uses: onecx/ci-quarkus/.github/workflows/quarkus-pr-auto-merge.yml@v1
-    needs: [helm]
     secrets: inherit
