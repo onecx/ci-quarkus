@@ -7,6 +7,14 @@ permissions:
   contents: read
 
 jobs:
+  info:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+    steps:
+      - name: Dump GitHub context
+        run: echo "${{ toJson(github) }}"
   dependabot:
     runs-on: ubuntu-latest
     permissions:
