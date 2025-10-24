@@ -2,12 +2,7 @@ name: pr
 
 on:
   workflow_call:
-    inputs:  
-      autoMerge:
-        description: 'Auto merge pr'
-        default: true
-        required: false
-        type: boolean
+    inputs:
       native:
         description: 'Build native image'
         default: false
