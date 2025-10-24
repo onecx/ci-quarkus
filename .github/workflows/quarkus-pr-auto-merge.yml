@@ -12,7 +12,7 @@ jobs:
     permissions:
       pull-requests: write
       contents: write
-    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.event_name == 'pull_request'
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.event_name == 'pull_request_target'
     steps:
       - name: Dependabot metadata
         id: metadata
@@ -26,5 +26,5 @@ jobs:
           gh pr merge --squash --auto "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.CI_PAT }}
 
