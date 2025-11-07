@@ -10,7 +10,7 @@ on:
         type: boolean
       nativeMulti:
         description: 'Build multiple architectures x84, arm4, ... native image'
-        default: false
+        default: true
         required: false
         type: boolean
 jobs:
