@@ -64,7 +64,7 @@ jobs:
       !cancelled()
       && needs.sonar.result == 'success'
       && needs.helm.result == 'success'
-      && ( !inputs.native || needs.native.result == 'success')
+      && ( !inputs.native || needs.native.result == 'success' || needs.nativeMulti.result == 'success' )
       && inputs.helmEventTargetRepository != ''
     uses: onecx/ci-product/.github/workflows/helm-send-event.yml@v1
     needs: [helm, sonar, native]
