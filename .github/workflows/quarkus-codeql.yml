@@ -17,7 +17,7 @@ jobs:
       # set up java and maven cache
     - uses: actions/setup-java@v5
       with:
-        distribution: 'zulu'
+        distribution: 'temurin'
         java-version: '21'
         cache: 'maven'
     # Initializes the CodeQL tools for scanning.
