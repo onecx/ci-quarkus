@@ -13,6 +13,11 @@ on:
         default: ''
         required: false
         type: string
+      helmEventTargetBranch:
+        description: 'Target branch'
+        default: 'main'
+        required: false
+        type: string
         
 jobs:
   docker:
@@ -43,6 +48,7 @@ jobs:
     secrets: inherit
     with:
       targetRepository: ${{ inputs.helmEventTargetRepository }}
+      targetBranch: ${{ inputs.helmEventTargetBranch }}
   changelog:
     if: |
       !cancelled()
