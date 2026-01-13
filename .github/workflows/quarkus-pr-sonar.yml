@@ -73,6 +73,7 @@ jobs:
         run: |
           SONAR_KEY="${GITHUB_REPOSITORY//\//_}"
           OPS="-Dsonar.projectKey=$SONAR_KEY"
+          OPS="$OPS -Dsonar.projectName=$SONAR_KEY"
           OPS="$OPS -Dsonar.scm.revision=${{ github.event.workflow_run.head_sha }}"
           OPS="$OPS -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml"
           OPS="$OPS -Dsonar.organization=${{ github.repository_owner }}"
