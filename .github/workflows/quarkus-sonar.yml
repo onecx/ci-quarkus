@@ -49,5 +49,6 @@ jobs:
           SONAR_URL: 'https://sonarcloud.io'      
         run: |
           SONAR_KEY="${GITHUB_REPOSITORY//\//_}"
-          mvn -ntp -B -e org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.projectName=$SONAR_KEY -Dsonar.projectKey=$SONAR_KEY -Dsonar.organization=${{ github.repository_owner }} -Dsonar.host.url=$SONAR_URL -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml
+          REPO_NAME=${GITHUB_REPOSITORY##*/}
+          mvn -ntp -B -e org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.projectName=$REPO_NAME -Dsonar.projectKey=$SONAR_KEY -Dsonar.organization=${{ github.repository_owner }} -Dsonar.host.url=$SONAR_URL -Dsonar.coverage.jacoco.xmlReportPaths=target/jacoco-report/jacoco.xml
         
