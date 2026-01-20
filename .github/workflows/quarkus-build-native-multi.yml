@@ -28,6 +28,11 @@ on:
         default: '[ "arm64", "x86_64" ]'
         required: false
         type: string
+      graalvm-version:
+        description: GraalVM version (release, latest, dev). Default: '' or latest.
+        default: '23.1.9.0-Final'
+        required: false
+        type: string
 
 jobs:
   maven:
@@ -67,6 +72,7 @@ jobs:
         java-version: ${{ inputs.jdk }}
         distribution: 'mandrel' # See 'Options' for all available distributions
         github-token: ${{ secrets.GITHUB_TOKEN }}
+        version: ${{ inputs.graalvm-version }}
     # setup github docker registry in the organization
     - uses: docker/setup-qemu-action@v3
     - uses: docker/setup-buildx-action@v3
