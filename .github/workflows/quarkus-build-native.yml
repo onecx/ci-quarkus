@@ -24,7 +24,7 @@ on:
         required: false
         type: string
       graalvm-version:
-        description: GraalVM version (release, latest, dev). Default: '' or latest.
+        description: 'GraalVM version (release, latest, dev). Default: empty-string or latest.'
         default: '23.1.9.0-Final'
         required: false
         type: string
