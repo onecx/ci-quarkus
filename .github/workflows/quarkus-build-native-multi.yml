@@ -106,7 +106,7 @@ jobs:
     - name: Build native project, run tests and push docker image
       run: mvn -ntp -B -e -DskipUTs=true -Dnative clean impsort:check formatter:validate verify --file pom.xml  
     # upload target for next jobs
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       if: ${{ !cancelled() }}
       with:
         name: package-native-${{ matrix.arch }}
@@ -123,7 +123,7 @@ jobs:
         mkdir -p ${{ runner.temp }}/digests
         touch "${{ runner.temp }}/digests/${{ env.DIGEST }}"
     - name: Upload digest info
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       if: ${{ !cancelled() && inputs.push }}
       with:
         name: digests-${{ env.MATRIX_ARCH }}
