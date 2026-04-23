@@ -5,7 +5,7 @@ on:
     inputs:
       jdk:
         description: 'JDK version'
-        default: '21'
+        default: '25'
         required: false
         type: string
       push:
@@ -30,7 +30,7 @@ on:
         type: string
       graalvm-version:
         description: 'GraalVM version (release, latest, dev). Default: empty-string or latest.'
-        default: '23.1.9.0-Final'
+        default: '25.0.2.0-Final'
         required: false
         type: string
 
@@ -101,8 +101,6 @@ jobs:
       env:
         SAMO_DOCKER_ANNOTATION_TEMPLATE: 'quarkus.docker.buildx.output=type=image,{{ range $index, $item := .Annotations }}{{if $index}},{{end}}annotation-index.{{ $item.Key }}={{ $item.Value}}{{ end }}'
     # build JVM version
-    - name: Create docker-java.properties
-      run: echo api.version=1.44 >> ~/.docker-java.properties
     - name: Build native project, run tests and push docker image
       run: mvn -ntp -B -e -DskipUTs=true -Dnative clean impsort:check formatter:validate verify --file pom.xml  
     # upload target for next jobs

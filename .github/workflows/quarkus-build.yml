@@ -5,9 +5,9 @@ on:
     inputs:
       jdk:
         description: 'JDK version'
-        default: '21'
+        default: '25'
         required: false
-        type: string    
+        type: string
       push:
         description: 'Push docker image'
         default: false
@@ -74,8 +74,6 @@ jobs:
       env:
         SAMO_DOCKER_ANNOTATION_TEMPLATE: 'quarkus.docker.buildx.output=type=image,{{ range $index, $item := .Annotations }}{{if $index}},{{end}}annotation-index.{{ $item.Key }}={{ $item.Value}}{{ end }}'
     # build JVM version
-    - name: Create docker-java.properties
-      run: echo api.version=1.44 >> ~/.docker-java.properties
     - name: Build jvm project, run tests and push docker image
       run: mvn -ntp -B -e clean impsort:check formatter:validate verify --file pom.xml
     # store github action pr number to file  
