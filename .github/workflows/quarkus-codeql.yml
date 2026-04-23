@@ -13,7 +13,7 @@ jobs:
       security-events: write
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       # set up java and maven cache
     - uses: actions/setup-java@v5
       with:

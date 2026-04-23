@@ -19,7 +19,7 @@ jobs:
       SAMO_CONVENTIONAL_COMMITS: 'true'      
     steps:
     # checkout the project
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         fetch-depth: 0
     # install samo tool
