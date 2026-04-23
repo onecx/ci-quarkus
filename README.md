@@ -1,5 +1,12 @@
 # ci-quarkus
 
+
+## Version
+
+Branches:
+* `v2` - Quarkus 3.33 LTS and later
+* `v1` - Quarkus 3.27 LTS
+
 Quarkus Github Actions
 
 * `quarkus-build.yml` - build and push docker image
