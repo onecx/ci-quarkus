@@ -15,26 +15,26 @@ on:
         type: boolean
 jobs:
   code-ql:
-    uses: onecx/ci-quarkus/.github/workflows/quarkus-codeql.yml@v1
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-codeql.yml@v2
     secrets: inherit
   quarkus:
-    uses: onecx/ci-quarkus/.github/workflows/quarkus-build.yml@v1
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-build.yml@v2
     secrets: inherit
     with:
       platform: ''
   liquibase:
-    uses: onecx/ci-quarkus/.github/workflows/quarkus-liquibase.yml@v1
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-liquibase.yml@v2
     secrets: inherit
   native:
     if: ${{ inputs.native && !inputs.nativeMulti }}
-    uses: onecx/ci-quarkus/.github/workflows/quarkus-build-native.yml@v1
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-build-native.yml@v2
     secrets: inherit
     needs: [quarkus, liquibase]
     with:
       args: '-Ob' # enable quick build mode
   nativeMulti:
     if: ${{ inputs.native && inputs.nativeMulti }}
-    uses: onecx/ci-quarkus/.github/workflows/quarkus-build-native-multi.yml@v1
+    uses: onecx/ci-quarkus/.github/workflows/quarkus-build-native-multi.yml@v2
     secrets: inherit
     needs: [quarkus, liquibase]
     with:
