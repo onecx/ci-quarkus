@@ -12,14 +12,11 @@ jobs:
     permissions:
       pull-requests: write
       contents: write
-    if: github.event.pull_request.user.login == 'tkit-dev' && github.event_name == 'pull_request_target' && startsWith(github.event.pull_request.head.ref, 'renovate/')
     steps:
-      - name: Enable auto-merge for Renovate PRs
-        run: |
-          gh pr review --approve "$PR_URL"
+      - name: Dump github context
         env:
-          PR_URL: ${{github.event.pull_request.html_url}}
-          GH_TOKEN: ${{ secrets.CI_PAT }}
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo "$GITHUB_CONTEXT"
   dependabot:
     runs-on: ubuntu-latest
     permissions:
